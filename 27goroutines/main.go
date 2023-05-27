@@ -6,7 +6,10 @@ import (
 	"sync"
 )
 
-var wg sync.WaitGroup
+var signals = []string{"test"}
+
+var wg sync.WaitGroup //pointer
+var mut sync.Mutex    //pointer
 
 func main() {
 	fmt.Println("Go Routines")
@@ -24,6 +27,7 @@ func main() {
 
 	}
 	wg.Wait()
+	fmt.Println(signals)
 }
 func getstatuscode(endpoint string) {
 	defer wg.Done()
@@ -31,6 +35,9 @@ func getstatuscode(endpoint string) {
 	if err != nil {
 		panic(err)
 	}
+	mut.Lock()
+	signals = append(signals, endpoint)
+	mut.Unlock()
 	fmt.Printf("%d status code for %s\n", res.StatusCode, endpoint)
 
 }
